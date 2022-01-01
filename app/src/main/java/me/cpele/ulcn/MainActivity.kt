@@ -49,8 +49,11 @@ fun textViewContents(
         }.toList()
 
     val arrayOfSpans = spans.toTypedArray()
+    val result = TextUtils.concat(*arrayOfSpans)
 
-    return TextUtils.concat(*arrayOfSpans)
+    fun getFallback() = context.getString(R.string.main_empty_spans_fallback)
+    fun isResultBlank() = result.isNullOrBlank()
+    return if (isResultBlank()) getFallback() else result
 }
 
 fun convertToIntent(link: String) =

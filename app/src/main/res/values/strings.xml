@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">ULCN</string>
+    <string name="main_empty_spans_fallback">Either you have opened the app from the launcher screen, or the input does not contain managed links.</string>
 </resources>
