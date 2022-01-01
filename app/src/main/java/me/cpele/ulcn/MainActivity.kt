@@ -20,8 +20,11 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        val textView = findViewById<TextView>(R.id.text_view)
-        textView.text = textViewContents(applicationContext, intent)
+        val result = textViewContents(applicationContext, intent)
+        val headerTextView = findViewById<TextView>(R.id.main_links_found)
+        headerTextView.text = getString(R.string.main_links_found)
+        val textView = findViewById<TextView>(R.id.main_result)
+        textView.text = result
     }
 }
 
