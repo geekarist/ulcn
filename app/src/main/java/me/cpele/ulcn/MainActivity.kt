@@ -12,6 +12,7 @@ import android.text.TextUtils
 import android.text.style.ClickableSpan
 import android.view.View
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import java.net.URLDecoder
 
@@ -20,7 +21,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        val result = textViewContents(applicationContext, intent)
+        val result = textViewContents(this, intent)
         val headerTextView = findViewById<TextView>(R.id.main_links_found)
         headerTextView.text = getString(R.string.main_links_found)
         val textView = findViewById<TextView>(R.id.main_result)
@@ -73,7 +74,18 @@ fun isIntentManaged(intent: Intent, packageManager: PackageManager) =
 fun clickableSpan(context: Context, intent: Intent) =
     object : ClickableSpan() {
         override fun onClick(widget: View) {
-            context.startActivity(intent)
+            try {
+                context.startActivity(intent)
+            } catch (e: Exception) {
+                Toast.makeText(
+                    context,
+                    context.getString(
+                        R.string.main_error_opening_link,
+                        e.message ?: context.getString(R.string.main_reason_unknown)
+                    ),
+                    Toast.LENGTH_LONG
+                ).show()
+            }
         }
     }
 

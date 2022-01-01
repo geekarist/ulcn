@@ -2,4 +2,6 @@
     <string name="app_name">ULCN</string>
     <string name="main_empty_spans_fallback">Either you have opened the app from the launcher screen, or the input does not contain managed links.</string>
     <string name="main_links_found">Links found?</string>
+    <string name="main_error_opening_link">Error opening link: %1$s</string>
+    <string name="main_reason_unknown">unknown reason</string>
 </resources>
