@@ -68,7 +68,7 @@ fun convertToIntent(link: String) =
 @SuppressLint("QueryPermissionsNeeded")
 fun isIntentManaged(intent: Intent, packageManager: PackageManager) =
     packageManager
-        .queryIntentActivities(intent, 0)
+        .queryIntentActivities(intent, PackageManager.MATCH_ALL)
         .isNotEmpty()
 
 fun clickableSpan(context: Context, intent: Intent) =
