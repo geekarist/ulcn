@@ -71,23 +71,32 @@ fun isIntentManaged(intent: Intent, packageManager: PackageManager) =
         .queryIntentActivities(intent, PackageManager.MATCH_ALL)
         .isNotEmpty()
 
-fun clickableSpan(context: Context, intent: Intent) =
-    object : ClickableSpan() {
+fun clickableSpan(context: Context, intent: Intent): ClickableSpan {
+
+    fun openIntent() = context.startActivity(intent)
+    fun fallbackReasonMsg() = context.getString(R.string.main_reason_unknown)
+    fun reasonMsg(e: Exception) = e.message ?: fallbackReasonMsg()
+    fun errorMsg(e: Exception) = context.getString(
+        R.string.main_error_opening_link,
+        reasonMsg(e)
+    )
+
+    fun showError(e: Exception) = Toast.makeText(
+        context,
+        errorMsg(e),
+        Toast.LENGTH_LONG
+    ).show()
+
+    return object : ClickableSpan() {
         override fun onClick(widget: View) {
             try {
-                context.startActivity(intent)
+                openIntent()
             } catch (e: Exception) {
-                Toast.makeText(
-                    context,
-                    context.getString(
-                        R.string.main_error_opening_link,
-                        e.message ?: context.getString(R.string.main_reason_unknown)
-                    ),
-                    Toast.LENGTH_LONG
-                ).show()
+                showError(e)
             }
         }
     }
+}
 
 @Suppress("DEPRECATION")
 fun spanIntent(
