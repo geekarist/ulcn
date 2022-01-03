@@ -33,11 +33,19 @@ class MainActivity : AppCompatActivity() {
         headerTextView.text = getString(R.string.main_links_found)
 
         val textView = findViewById<TextView>(R.id.main_result)
-
-        val uri = intent.data
-            ?: intent.getCharSequenceExtra(Intent.EXTRA_PROCESS_TEXT)
-        textView.text = textViewContents(this, uri.toString())
         textView.movementMethod = LinkMovementMethod.getInstance()
+
+        fun getExtraProcessText() = intent.getStringExtra(Intent.EXTRA_PROCESS_TEXT)
+        fun getIntentData() = intent.data?.let { encodedUri ->
+            @Suppress("DEPRECATION")
+            URLDecoder.decode(encodedUri.toString())
+        }
+
+        val decodedUri = getIntentData()
+            ?: getExtraProcessText()
+            ?: ""
+        val content = decodedUriToContent(this, decodedUri)
+        textView.text = content
 
         findViewById<Button>(R.id.main_paste_button).setOnClickListener {
             val clipboardManager: ClipboardManager? = getSystemService()
@@ -46,19 +54,15 @@ class MainActivity : AppCompatActivity() {
                 ?.getItemAt(0)
                 ?.text
                 .toString()
-            textView.text = textViewContents(this, clipboard)
+            textView.text = decodedUriToContent(this, clipboard)
         }
     }
 }
 
-fun textViewContents(
+private fun decodedUriToContent(
     context: Context,
-    encodedUri: String
+    decodedUri: String
 ): CharSequence {
-
-    @Suppress("DEPRECATION")
-    val decodedUri = URLDecoder.decode(encodedUri)
-    Log.d(LOG_TAG, "decodedUri: $decodedUri")
     val q = decodedUri.replace("geo:0,0?q=", "")
     Log.d(LOG_TAG, "q: $q")
     val words = q.split(' ', '\n', '\t', '\r')
@@ -75,7 +79,7 @@ fun textViewContents(
             val span = clickableSpan(context, intent)
             span to intent
         }.map { (span, intent) ->
-            applySpanToIntent(span, intent)
+            applySpanToIntentData(span, intent)
         }.toList()
 
     // Trim last item
@@ -135,7 +139,7 @@ fun clickableSpan(context: Context, intent: Intent): ClickableSpan {
 }
 
 @Suppress("DEPRECATION")
-fun applySpanToIntent(
+fun applySpanToIntentData(
     span: Any,
     intent: Intent
 ): CharSequence =

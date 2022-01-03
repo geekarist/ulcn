@@ -36,6 +36,7 @@
         android:layout_marginBottom="8dp"
         android:autoLink="all"
         android:gravity="center_horizontal"
+        android:text="@string/main_empty_spans_fallback"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
         app:layout_constraintBottom_toTopOf="@+id/main_paste_button"
         app:layout_constraintEnd_toEndOf="parent"
