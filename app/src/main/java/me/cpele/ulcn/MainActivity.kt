@@ -10,6 +10,7 @@ import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.TextUtils
 import android.text.style.ClickableSpan
+import android.util.Log
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
@@ -39,12 +40,18 @@ fun textViewContents(
 
     @Suppress("DEPRECATION")
     val decodedUri = URLDecoder.decode(encodedUri)
+    Log.d(null, "uri: $uri")
     val q = decodedUri.replace("geo:0,0?q=", "")
+    Log.d(null, "q: $q")
     val words = q.split(' ')
 
     val spans = words.asSequence()
         .map { link -> convertToIntent(link) }
-        .filter { intent -> isIntentManaged(intent, context.packageManager) }
+        .filter { intent ->
+            isIntentManaged(intent, context.packageManager).also {
+                Log.d(null, "Intent managed? intent=($intent) → $it")
+            }
+        }
         .map { intent ->
             val span = clickableSpan(context, intent)
             span to intent
