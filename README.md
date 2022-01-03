@@ -2,7 +2,7 @@ This app allows you to open any deeplink if it is managed by another app install
 
 ## Features
 
-You can import deeplinks from several sources 
+You can import deeplinks from several sources:
 - The clipboard
 - The location field of a calendar event
 - Selected text (using a custom text selection action)
