@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.TextUtils
+import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.util.Log
 import android.view.View
@@ -27,6 +28,7 @@ class MainActivity : AppCompatActivity() {
         headerTextView.text = getString(R.string.main_links_found)
         val textView = findViewById<TextView>(R.id.main_result)
         textView.text = result
+        textView.movementMethod = LinkMovementMethod.getInstance()
     }
 }
 
@@ -80,7 +82,10 @@ fun isIntentManaged(intent: Intent, packageManager: PackageManager) =
 
 fun clickableSpan(context: Context, intent: Intent): ClickableSpan {
 
-    fun openIntent() = context.startActivity(intent)
+    fun openIntent() {
+        Log.d(null, "Opening intent $intent")
+        context.startActivity(intent)
+    }
     fun fallbackReasonMsg() = context.getString(R.string.main_reason_unknown)
     fun reasonMsg(e: Exception) = e.message ?: fallbackReasonMsg()
     fun errorMsg(e: Exception) = context.getString(
