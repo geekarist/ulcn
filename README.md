@@ -1,4 +1,4 @@
-This app allows you to open any deeplink that is managed by any app installed on your device. 
+This app allows you to open any deeplink if it is managed by another app installed on your device. 
 
 ## Features
 
