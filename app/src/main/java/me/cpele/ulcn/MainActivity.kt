@@ -49,7 +49,7 @@ fun textViewContents(
             val span = clickableSpan(context, intent)
             span to intent
         }.map { (span, intent) ->
-            spanIntent(span, intent)
+            applySpanToIntent(span, intent)
         }.toList()
 
     val arrayOfSpans = spans.toTypedArray()
@@ -99,7 +99,7 @@ fun clickableSpan(context: Context, intent: Intent): ClickableSpan {
 }
 
 @Suppress("DEPRECATION")
-fun spanIntent(
+fun applySpanToIntent(
     span: Any,
     intent: Intent
 ): CharSequence =
