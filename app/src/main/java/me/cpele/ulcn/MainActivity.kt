@@ -18,6 +18,8 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import java.net.URLDecoder
 
+const val LOG_TAG = "202201031454"
+
 class MainActivity : AppCompatActivity() {
     @SuppressLint("QueryPermissionsNeeded")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,20 +40,22 @@ fun textViewContents(
 ): CharSequence {
 
     val uri = actIntent.data
+        ?: actIntent
+            .getCharSequenceExtra(Intent.EXTRA_PROCESS_TEXT)
     val encodedUri = uri.toString()
 
     @Suppress("DEPRECATION")
     val decodedUri = URLDecoder.decode(encodedUri)
-    Log.d(null, "uri: $uri")
+    Log.d(LOG_TAG, "uri: $uri")
     val q = decodedUri.replace("geo:0,0?q=", "")
-    Log.d(null, "q: $q")
+    Log.d(LOG_TAG, "q: $q")
     val words = q.split(' ', '\n', '\t', '\r')
 
     val spans = words.asSequence()
         .map { link -> convertToIntent(link) }
         .filter { intent ->
             isIntentManaged(intent, context.packageManager).also {
-                Log.d(null, "Intent managed? intent=($intent) → $it")
+                Log.d(LOG_TAG, "Intent managed? intent=($intent) → $it")
             }
         }
         .map { intent ->
@@ -83,9 +87,10 @@ fun isIntentManaged(intent: Intent, packageManager: PackageManager) =
 fun clickableSpan(context: Context, intent: Intent): ClickableSpan {
 
     fun openIntent() {
-        Log.d(null, "Opening intent $intent")
+        Log.d(LOG_TAG, "Opening intent $intent")
         context.startActivity(intent)
     }
+
     fun fallbackReasonMsg() = context.getString(R.string.main_reason_unknown)
     fun reasonMsg(e: Exception) = e.message ?: fallbackReasonMsg()
     fun errorMsg(e: Exception) = context.getString(
