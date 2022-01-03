@@ -4,4 +4,5 @@
     <string name="main_links_found">Links found?</string>
     <string name="main_error_opening_link">Error opening link: %1$s</string>
     <string name="main_reason_unknown">unknown reason</string>
+    <string name="main_paste">Paste from clipboard</string>
 </resources>

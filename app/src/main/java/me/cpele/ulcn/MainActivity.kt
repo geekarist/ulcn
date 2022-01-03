@@ -1,6 +1,7 @@
 package me.cpele.ulcn
 
 import android.annotation.SuppressLint
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -13,9 +14,11 @@ import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.util.Log
 import android.view.View
+import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.getSystemService
 import java.net.URLDecoder
 
 const val LOG_TAG = "202201031454"
@@ -25,32 +28,42 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        val result = textViewContents(this, intent)
+
         val headerTextView = findViewById<TextView>(R.id.main_links_found)
         headerTextView.text = getString(R.string.main_links_found)
+
         val textView = findViewById<TextView>(R.id.main_result)
-        textView.text = result
+
+        val uri = intent.data
+            ?: intent.getCharSequenceExtra(Intent.EXTRA_PROCESS_TEXT)
+        textView.text = textViewContents(this, uri.toString())
         textView.movementMethod = LinkMovementMethod.getInstance()
+
+        findViewById<Button>(R.id.main_paste_button).setOnClickListener {
+            val clipboardManager: ClipboardManager? = getSystemService()
+            val clipboard = clipboardManager
+                ?.primaryClip
+                ?.getItemAt(0)
+                ?.text
+                .toString()
+            textView.text = textViewContents(this, clipboard)
+        }
     }
 }
 
 fun textViewContents(
     context: Context,
-    actIntent: Intent
+    encodedUri: String
 ): CharSequence {
-
-    val uri = actIntent.data
-        ?: actIntent
-            .getCharSequenceExtra(Intent.EXTRA_PROCESS_TEXT)
-    val encodedUri = uri.toString()
 
     @Suppress("DEPRECATION")
     val decodedUri = URLDecoder.decode(encodedUri)
-    Log.d(LOG_TAG, "uri: $uri")
+    Log.d(LOG_TAG, "decodedUri: $decodedUri")
     val q = decodedUri.replace("geo:0,0?q=", "")
     Log.d(LOG_TAG, "q: $q")
     val words = q.split(' ', '\n', '\t', '\r')
 
+    // Build list of clickable spans, one for each managed link of input
     val spans = words.asSequence()
         .map { link -> convertToIntent(link) }
         .filter { intent ->
@@ -65,9 +78,15 @@ fun textViewContents(
             applySpanToIntent(span, intent)
         }.toList()
 
-    val arrayOfSpans = spans.toTypedArray()
+    // Trim last item
+    val lastItemTrimmed = spans.lastOrNull()?.trim()
+    val trimmedSpans = spans.dropLast(1) + lastItemTrimmed
+
+    // Concat clickable spans
+    val arrayOfSpans = trimmedSpans.toTypedArray()
     val result = TextUtils.concat(*arrayOfSpans)
 
+    // Return clickable spans if any, or a fallback
     fun getFallback() = context.getString(R.string.main_empty_spans_fallback)
     fun isResultBlank() = result.isNullOrBlank()
     return if (isResultBlank()) getFallback() else result
