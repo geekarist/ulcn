@@ -45,7 +45,7 @@ fun textViewContents(
     Log.d(null, "uri: $uri")
     val q = decodedUri.replace("geo:0,0?q=", "")
     Log.d(null, "q: $q")
-    val words = q.split(' ')
+    val words = q.split(' ', '\n', '\t', '\r')
 
     val spans = words.asSequence()
         .map { link -> convertToIntent(link) }
